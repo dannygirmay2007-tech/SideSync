@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SideSync</title>
+</head>
+<body>
+    <h1>SideSync</h1>
+    <p>Create fair pickup soccer teams.</p>
+    <p>{{ player_count}} players added</p>
+    <ul>
+    {% for player in players %}
+        <li>{{ player }}</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>
