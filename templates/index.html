@@ -13,5 +13,11 @@
         <li>{{ player }}</li>
     {% endfor %}
     </ul>
+    <h2>Add Player</h2>
+    <form method="POST">
+        <label for="player_name">Player name:</label>
+        <input type = "text" id="player_name" name="player_name" required>
+        <button type="submit">Add Player</button>
+    </form>
 </body>
 </html>
