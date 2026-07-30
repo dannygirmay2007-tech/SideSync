@@ -9,14 +9,30 @@
     <p>Create fair pickup soccer teams.</p>
     <p>{{ player_count}} players added</p>
     <ul>
-    {% for player in players %}
-        <li>{{ player }}</li>
-    {% endfor %}
+    {% if players%}
+        {% for player in players %}
+            <li>{{ player["name"] }}
+                <ul>
+                    <li>Athleticism: {{ player["athleticism"] }}</li>
+                    <li>Technical: {{ player["technical"] }}</li>
+                    <li>Football IQ: {{ player["football_iq"] }}</li>
+                </ul>
+            </li>
+        {% endfor %}
+    {% else %}
+    <p>No players have been added yet.</p>
+    {% endif %}
     </ul>
     <h2>Add Player</h2>
     <form method="POST">
         <label for="player_name">Player name:</label>
-        <input type = "text" id="player_name" name="player_name" required>
+            <input type = "text" id="player_name" name="player_name" required>
+        <label for="athleticism">Athleticism: </label>
+            <input type = "number" id="athleticism" name="athleticism" min="1" max="10" step="0.5" required>
+        <label for="technical">Technical: </label>
+            <input type = "number" id="technical" name="technical" min="1" max="10" step="0.5" required>
+        <label for="football_iq">Football IQ: </label>
+            <input type = "number" id="football_iq" name="football_iq" min="1" max="10" step="0.5" required>
         <button type="submit">Add Player</button>
     </form>
 </body>
