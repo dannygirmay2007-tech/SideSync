@@ -11,13 +11,17 @@
     <ul>
     {% if players%}
         {% for player in players %}
-            <li>{{ player["name"] }}
+            <li>{{ player.name }}
                 <ul>
-                    <li>Athleticism: {{ player["athleticism"] }}</li>
-                    <li>Technical: {{ player["technical"] }}</li>
-                    <li>Football IQ: {{ player["football_iq"] }}</li>
+                    <li>Athleticism: {{ player.athleticism }}</li>
+                    <li>Technical: {{ player.technical }}</li>
+                    <li>Football IQ: {{ player.football_iq }}</li>
                 </ul>
             </li>
+            <a href="{{url_for('edit_player',player_id=player.id)}}">Edit</a>
+            <form method="POST" action="{{ url_for('delete_player', player_id=player.id) }}">
+    <button type="submit">Delete</button>
+</form>
         {% endfor %}
     {% else %}
     <p>No players have been added yet.</p>

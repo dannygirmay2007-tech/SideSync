@@ -10,19 +10,6 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///sidesync.db"
 db = SQLAlchemy(app)
 
-players = [ {
-        "name": "Danny",
-        "athleticism": 7,
-        "technical": 8,
-        "football_iq": 9
-    },  
-    {
-        "name": "Aden",
-        "athleticism": 6,
-        "technical": 8.5,
-        "football_iq": 10
-    } ]
-
 class Player(db.Model):
     '''
     model for a player table.
@@ -76,6 +63,37 @@ def home():
         players=players,
         player_count=len(players)
     )
+@app.route("/players/<int:player_id>/delete", methods=["POST"])
+def delete_player(player_id):
+    ''' Function used to delete players from db
+    args: player_id
+    return: home page
+
+    '''
+    player = db.session.get(Player, player_id)
+    if player:
+        db.session.delete(player)
+        db.session.commit()
+    return redirect(url_for("home"))
+@app.route("/players/<int:player_id>/edit", methods=["GET", "POST"])
+def edit_player(player_id):
+    player = db.session.get(Player,player_id)
+
+    if request.method == "POST":
+        player_name = request.form["player_name"].strip()
+        player.name = player_name
+        player.athleticism=float(request.form["athleticism"])
+        player.technical=float(request.form["technical"])
+        player.football_iq=float(request.form["football_iq"])
+        db.session.commit()
+    if request.method == "GET":
+        return render_template(
+    "edit_player.html",
+    player=player
+    )
+    return redirect(url_for("home"))
+        
+
 with app.app_context():
     '''
     creates any missing database tables based on my models.
