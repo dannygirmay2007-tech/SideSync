@@ -25,7 +25,7 @@ players = [ {
 
 class Player(db.Model):
     '''
-    Database of players
+    model for a player table.
     it inherits models from db aka SQLAlchemy
     
     '''
@@ -44,7 +44,11 @@ def home():
     '''
     if request.method == "POST":
         player_name = request.form["player_name"].strip()
-
+        '''
+        new_player creates a new instance of the Player model.
+        name we get from player_name because we strip right before adding it.
+        athleticsm,tekk,iq all come from the reqeust.form[field]
+        '''
         new_player = Player(
     name= player_name,
     athleticism=float(request.form["athleticism"]),
@@ -53,11 +57,18 @@ def home():
 )
 
         if player_name:
+            '''
+            add stages a pending database change 
+            commit actually permanetly writes it into SQLite permanetly.
+            '''
             db.session.add(new_player)
             db.session.commit()
 
         return redirect(url_for("home"))
-
+    '''
+    Query all saved Player records from the database:
+    select Player rows → execute the query → extract Player objects → return them as a list
+    '''
     players = db.session.execute(db.select(Player)).scalars().all()
 
     return render_template(
@@ -66,6 +77,9 @@ def home():
         player_count=len(players)
     )
 with app.app_context():
+    '''
+    creates any missing database tables based on my models.
+    '''
     db.create_all()
 if __name__ == "__main__":
     app.run(debug=True)
