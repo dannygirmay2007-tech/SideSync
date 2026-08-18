@@ -92,8 +92,25 @@ def edit_player(player_id):
     player=player
     )
     return redirect(url_for("home"))
-        
 
+@app.route("/generate-teams",methods=["POST"])
+def generate_teams():
+    '''
+    Function is to generate teams. 
+    args= none
+    return: N/A For now
+    '''
+    player_ids = request.form.getlist("player_ids")
+    if len(player_ids)<=1:
+        return "Not enough players"
+    if len(player_ids)%2!=0:
+        return "Uneven players.(Perhaps play with 1 neutral?)"
+    player_ids = [int(value) for value in player_ids]
+    selected_players = db.session.execute(
+    db.select(Player).where(Player.id.in_(player_ids))).scalars().all()
+    for player in selected_players:
+        print(player.name)
+    return "Received players"
 with app.app_context():
     '''
     creates any missing database tables based on my models.
