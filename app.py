@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from itertools import combinations
 
 '''
 app is defining the app uses Flask object.
@@ -108,9 +109,53 @@ def generate_teams():
     player_ids = [int(value) for value in player_ids]
     selected_players = db.session.execute(
     db.select(Player).where(Player.id.in_(player_ids))).scalars().all()
-    for player in selected_players:
-        print(player.name)
-    return "Received players"
+    possible_team_as = combinations(selected_players,len(selected_players)//2)
+    best_diff = None
+    best_a_team = None
+    best_b_team= None
+    for team_a in possible_team_as:
+        A_iq = 0
+        A_tech = 0
+        A_athleticism = 0
+        B_iq = 0
+        B_tech = 0
+        B_athleticism = 0
+        if selected_players[0] not in team_a:
+            continue
+        team_b = [player for player in selected_players if player not in team_a]
+        for player in team_a:
+            A_iq+= player.football_iq
+            A_tech+= player.technical
+            A_athleticism+= player.athleticism
+            print("A",player.name)
+        A_iq_avg = A_iq/len(team_a)
+        A_tech_avg = A_tech/len(team_a)
+        A_athleticism_avg = (A_athleticism/len(team_a))
+        print(A_iq_avg,A_tech_avg,A_athleticism_avg)
+        print("-")
+        for player in team_b:
+            B_iq+= player.football_iq
+            B_tech+= player.technical
+            B_athleticism+= player.athleticism
+            print("B",player.name)
+        B_iq_avg = B_iq/len(team_b)
+        B_tech_avg = B_tech/len(team_b)
+        B_athleticism_avg = B_athleticism/len(team_b)
+        print(B_iq_avg,B_tech_avg,B_athleticism_avg)
+        iq_diff = abs((A_iq_avg*0.45) - (B_iq_avg*0.45))
+        tech_diff = abs((A_tech_avg*0.35) - (B_tech_avg*0.35))
+        athleticism_diff = abs((A_athleticism_avg*0.20) - (B_athleticism_avg*0.20))
+        total_diff = iq_diff+tech_diff+athleticism_diff
+        if best_diff is None or total_diff < best_diff:
+            best_diff = total_diff
+            best_a_team= [player.name for player in team_a]
+            best_b_team = [player.name for player in team_b]
+            
+        print("***\n",iq_diff,tech_diff,athleticism_diff)
+        print("------")
+    print(best_diff,"A team:", best_a_team,"B team:",best_b_team)
+        
+    return f"{best_diff} A Team: {best_a_team} B team: {best_b_team}"
 with app.app_context():
     '''
     creates any missing database tables based on my models.
