@@ -106,56 +106,82 @@ def generate_teams():
         return "Not enough players"
     if len(player_ids)%2!=0:
         return "Uneven players.(Perhaps play with 1 neutral?)"
+    # Form values come in as strings, so convert each player ID to an integer
     player_ids = [int(value) for value in player_ids]
+    # Query the database for every Player whose ID was selected
+    # .where(...in_(player_ids)) filters the Player table to only those IDs
     selected_players = db.session.execute(
+    # Generate every possible Team A containing half of the selected players
     db.select(Player).where(Player.id.in_(player_ids))).scalars().all()
     possible_team_as = combinations(selected_players,len(selected_players)//2)
+    # Store the fairest matchup found so far
     best_diff = None
     best_a_team = None
     best_b_team= None
+    # Check every possible Team A
     for team_a in possible_team_as:
+        # Reset rating totals for each new matchup
         A_iq = 0
         A_tech = 0
         A_athleticism = 0
         B_iq = 0
         B_tech = 0
         B_athleticism = 0
+         # Every matchup appears twice with the teams flipped.
+        # Keep only combinations where the first selected player is on Team A.
+
         if selected_players[0] not in team_a:
             continue
+        # Team B is every selected player who is NOT already on Team A
         team_b = [player for player in selected_players if player not in team_a]
+
+        # Add together Team A's ratings
         for player in team_a:
             A_iq+= player.football_iq
             A_tech+= player.technical
             A_athleticism+= player.athleticism
-            print("A",player.name)
+            #print("A",player.name)
+        # Calculate Team A's average ratings
         A_iq_avg = A_iq/len(team_a)
         A_tech_avg = A_tech/len(team_a)
         A_athleticism_avg = (A_athleticism/len(team_a))
-        print(A_iq_avg,A_tech_avg,A_athleticism_avg)
-        print("-")
+        #print(A_iq_avg,A_tech_avg,A_athleticism_avg)
+        #print("-")
+        # Add together Team B's ratings
         for player in team_b:
             B_iq+= player.football_iq
             B_tech+= player.technical
             B_athleticism+= player.athleticism
-            print("B",player.name)
+            #print("B",player.name)
+        # Calculate Team B's average ratings
         B_iq_avg = B_iq/len(team_b)
         B_tech_avg = B_tech/len(team_b)
         B_athleticism_avg = B_athleticism/len(team_b)
-        print(B_iq_avg,B_tech_avg,B_athleticism_avg)
+        #print(B_iq_avg,B_tech_avg,B_athleticism_avg)
+        # Calculate the difference between the teams in each category.
+        # abs() makes the difference positive no matter which team is stronger.
+        # Apply our weights: IQ 45%, Technical 35%, Athleticism 20%.
+        
         iq_diff = abs((A_iq_avg*0.45) - (B_iq_avg*0.45))
         tech_diff = abs((A_tech_avg*0.35) - (B_tech_avg*0.35))
         athleticism_diff = abs((A_athleticism_avg*0.20) - (B_athleticism_avg*0.20))
+        # One overall balance penalty.
+        # Lower total_diff means the teams are more evenly matched.
         total_diff = iq_diff+tech_diff+athleticism_diff
         if best_diff is None or total_diff < best_diff:
             best_diff = total_diff
-            best_a_team= [player.name for player in team_a]
-            best_b_team = [player.name for player in team_b]
+            best_a_team= [player for player in team_a]
+            best_b_team = [player for player in team_b]
             
-        print("***\n",iq_diff,tech_diff,athleticism_diff)
-        print("------")
-    print(best_diff,"A team:", best_a_team,"B team:",best_b_team)
-        
-    return f"{best_diff} A Team: {best_a_team} B team: {best_b_team}"
+        #print("***\n",iq_diff,tech_diff,athleticism_diff)
+        #print("------")
+    # After checking every matchup, these are the fairest teams found    
+    return render_template(
+        "generate_teams.html",
+        best_a_team=best_a_team,
+        best_b_team=best_b_team,
+        best_diff=best_diff
+        )
 with app.app_context():
     '''
     creates any missing database tables based on my models.

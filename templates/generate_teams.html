@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SideSync generated teams</title>
+</head>
+<body>
+    <section>
+        <h1>{{best_diff}}</h1>
+        <h1>Team A</h1>
+        {% for player in best_a_team %}
+            <li>{{ player.name }}
+                <ul>
+                    <li>Athleticism: {{ player.athleticism }}</li>
+                    <li>Technical: {{ player.technical }}</li>
+                    <li>Football IQ: {{ player.football_iq }}</li>
+                </ul>
+            </li>
+    </section>
+            {% endfor %}
+    <section>
+        <h1>Team B</h1>
+        {% for player in best_b_team %}
+            <li>{{ player.name }}
+                <ul>
+                    <li>Athleticism: {{ player.athleticism }}</li>
+                    <li>Technical: {{ player.technical }}</li>
+                    <li>Football IQ: {{ player.football_iq }}</li>
+                </ul>
+            </li>
+    </section>
+            {% endfor %}
+        
+    
+</body>
+</html>
