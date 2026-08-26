@@ -1,0 +1,585 @@
+:root {
+    --bg: #080c14;
+    --bg-soft: #0d1420;
+    --panel: rgba(17, 26, 40, 0.94);
+    --panel-strong: #152238;
+    --border: rgba(255, 255, 255, 0.09);
+    --text: #f5f8f6;
+    --muted: #9eacc0;
+    --accent: #5b8cff;
+    --accent-strong: #4078f5;
+    --accent-soft: rgba(91, 140, 255, 0.12);
+    --danger: #ff7272;
+    --danger-soft: rgba(255, 114, 114, 0.10);
+    --shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 12px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    color-scheme: dark;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at top left, rgba(91, 140, 255, 0.13), transparent 30%),
+        radial-gradient(circle at 90% 10%, rgba(91, 140, 255, 0.07), transparent 25%),
+        linear-gradient(160deg, #070b12 0%, #0b1220 52%, #080c14 100%);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button,
+a,
+input[type="checkbox"] {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.app-shell {
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 48px 0 64px;
+}
+
+.hero,
+.results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    margin-bottom: 28px;
+    padding: 8px 4px;
+}
+
+.brand,
+.hero h1,
+.results-header h1,
+.form-card h1 {
+    margin: 0;
+    font-size: clamp(2.35rem, 5vw, 4.6rem);
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+}
+
+.results-header h1,
+.form-card h1 {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+}
+
+.eyebrow {
+    margin: 0 0 8px;
+    color: var(--accent);
+    font-size: 0.77rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.hero-copy,
+.section-copy {
+    max-width: 650px;
+    margin: 12px 0 0;
+    color: var(--muted);
+    line-height: 1.65;
+}
+
+.player-count,
+.balance-score {
+    min-width: 150px;
+    padding: 18px 22px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--accent-soft);
+    box-shadow: var(--shadow);
+}
+
+.player-count {
+    display: grid;
+    justify-items: center;
+}
+
+.player-count-number,
+.balance-score-value {
+    color: var(--accent);
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+}
+
+.player-count-label,
+.balance-score-label,
+.balance-score-hint {
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+
+.balance-score {
+    display: grid;
+    gap: 3px;
+}
+
+.balance-score-value {
+    font-size: 2.35rem;
+}
+
+.panel,
+.team-panel {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, rgba(20, 31, 49, 0.96), rgba(13, 21, 34, 0.96));
+    box-shadow: var(--shadow);
+}
+
+.panel {
+    padding: 28px;
+    margin-bottom: 24px;
+}
+
+.section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.compact-heading {
+    align-items: flex-start;
+}
+
+.section-heading h2,
+.team-heading h2,
+.empty-state h3 {
+    margin: 0;
+    font-size: 1.65rem;
+    letter-spacing: -0.03em;
+}
+
+.player-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.player-card,
+.result-player-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.025);
+    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.player-card {
+    padding: 18px;
+}
+
+.player-card:hover,
+.result-player-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(91, 140, 255, 0.35);
+    background: rgba(91, 140, 255, 0.05);
+}
+
+.player-card-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.player-select {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    cursor: pointer;
+}
+
+.player-checkbox {
+    width: 19px;
+    height: 19px;
+    margin: 0;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.player-name {
+    font-size: 1.08rem;
+    font-weight: 800;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.stat {
+    display: grid;
+    gap: 5px;
+    padding: 8px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 0.64rem;
+    line-height: 1.2;
+    min-height: 2.4em;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.stat-value {
+    font-size: 1.05rem;
+}
+
+.card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.card-actions form {
+    margin: 0;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 17px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 140ms ease, background 140ms ease, border-color 140ms ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    color: #07111f;
+    background: var(--accent);
+}
+
+.btn-primary:hover {
+    background: var(--accent-strong);
+}
+
+.btn-secondary {
+    border-color: var(--border);
+    color: var(--text);
+    background: rgba(255, 255, 255, 0.045);
+}
+
+.btn-secondary:hover {
+    border-color: rgba(91, 140, 255, 0.28);
+    background: rgba(91, 140, 255, 0.09);
+}
+
+.btn-danger {
+    border-color: rgba(255, 114, 114, 0.16);
+    color: var(--danger);
+    background: var(--danger-soft);
+}
+
+.btn-danger:hover {
+    border-color: rgba(255, 114, 114, 0.34);
+    background: rgba(255, 114, 114, 0.15);
+}
+
+.btn-small {
+    min-height: 36px;
+    padding: 0 13px;
+    font-size: 0.85rem;
+}
+
+.empty-state {
+    padding: 36px 24px;
+    border: 1px dashed rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.empty-state p {
+    margin: 8px 0 0;
+    color: var(--muted);
+}
+
+.player-form {
+    display: grid;
+    grid-template-columns: 1.45fr repeat(3, minmax(120px, 0.8fr)) auto;
+    gap: 14px;
+    align-items: end;
+}
+
+.form-field {
+    display: grid;
+    gap: 8px;
+}
+
+.form-field label {
+    color: var(--muted);
+    font-size: 0.79rem;
+    font-weight: 700;
+}
+
+.form-field input {
+    width: 100%;
+    min-height: 46px;
+    padding: 0 13px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    outline: none;
+    color: var(--text);
+    background: rgba(0, 0, 0, 0.18);
+    transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+}
+
+.form-field input::placeholder {
+    color: #6f7f75;
+}
+
+.form-field input:focus {
+    border-color: rgba(91, 140, 255, 0.62);
+    background: rgba(91, 140, 255, 0.04);
+    box-shadow: 0 0 0 4px rgba(91, 140, 255, 0.10);
+}
+
+.form-submit {
+    display: flex;
+    align-items: end;
+}
+
+.form-submit .btn {
+    width: 100%;
+}
+
+.page-center {
+    width: min(850px, calc(100% - 32px));
+    min-height: 100vh;
+    margin: 0 auto;
+    display: grid;
+    place-items: center;
+    padding: 48px 0;
+}
+
+.form-card {
+    width: 100%;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 26px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.back-link:hover {
+    color: var(--accent);
+}
+
+.edit-form {
+    grid-template-columns: 1.4fr repeat(3, 1fr);
+}
+
+.edit-form .form-submit {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+}
+
+.edit-form .form-submit .btn {
+    width: auto;
+}
+
+.results-shell {
+    width: min(1120px, calc(100% - 32px));
+}
+
+.teams-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: stretch;
+    gap: 18px;
+}
+
+.team-panel {
+    padding: 24px;
+}
+
+.team-heading {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.team-badge {
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    color: #07111f;
+    background: var(--accent);
+    font-size: 1.1rem;
+    font-weight: 950;
+}
+
+.team-roster {
+    display: grid;
+    gap: 12px;
+}
+
+.result-player-card {
+    padding: 16px;
+}
+
+.result-player-card h3 {
+    margin: 0 0 12px;
+    font-size: 1.05rem;
+}
+
+.result-stats {
+    display: grid;
+    gap: 7px;
+}
+
+.result-stats span {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.result-stats strong {
+    color: var(--text);
+}
+
+.versus {
+    align-self: center;
+    width: 58px;
+    height: 58px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--accent);
+    background: var(--bg-soft);
+    font-size: 0.85rem;
+    font-weight: 950;
+    letter-spacing: 0.08em;
+    box-shadow: var(--shadow);
+}
+
+.results-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+@media (max-width: 900px) {
+    .player-form,
+    .edit-form {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .form-field-wide {
+        grid-column: 1 / -1;
+    }
+
+    .form-submit {
+        grid-column: 1 / -1;
+    }
+
+    .teams-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .versus {
+        justify-self: center;
+    }
+}
+
+@media (max-width: 650px) {
+    .app-shell,
+    .results-shell {
+        width: min(100% - 20px, 1180px);
+        padding-top: 28px;
+    }
+
+    .hero,
+    .results-header,
+    .section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .player-count,
+    .balance-score,
+    .generate-form,
+    .generate-form .btn {
+        width: 100%;
+    }
+
+    .player-count {
+        grid-auto-flow: column;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .panel,
+    .team-panel {
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    .player-grid,
+    .player-form,
+    .edit-form {
+        grid-template-columns: 1fr;
+    }
+
+    .form-field-wide,
+    .form-submit,
+    .edit-form .form-submit {
+        grid-column: auto;
+    }
+
+    .edit-form .form-submit .btn {
+        width: 100%;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}

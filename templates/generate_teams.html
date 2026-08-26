@@ -2,35 +2,79 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SideSync generated teams</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balanced Teams | SideSync</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <section>
-        <h1>{{best_diff}}</h1>
-        <h1>Team A</h1>
-        {% for player in best_a_team %}
-            <li>{{ player.name }}
-                <ul>
-                    <li>Athleticism: {{ player.athleticism }}</li>
-                    <li>Technical: {{ player.technical }}</li>
-                    <li>Football IQ: {{ player.football_iq }}</li>
-                </ul>
-            </li>
-    </section>
-            {% endfor %}
-    <section>
-        <h1>Team B</h1>
-        {% for player in best_b_team %}
-            <li>{{ player.name }}
-                <ul>
-                    <li>Athleticism: {{ player.athleticism }}</li>
-                    <li>Technical: {{ player.technical }}</li>
-                    <li>Football IQ: {{ player.football_iq }}</li>
-                </ul>
-            </li>
-    </section>
-            {% endfor %}
-        
-    
+    <main class="app-shell results-shell">
+        <header class="results-header">
+            <div>
+                <p class="eyebrow">SideSync result</p>
+                <h1>Balanced Teams</h1>
+                <p class="section-copy">The lowest balance penalty found across the valid team combinations.</p>
+            </div>
+
+            <div class="balance-score">
+                <span class="balance-score-label">Balance score</span>
+                <strong class="balance-score-value">{{ best_diff|round(3) }}</strong>
+                <span class="balance-score-hint">Lower is closer</span>
+            </div>
+        </header>
+
+        <div class="teams-layout">
+            <section class="team-panel">
+                <div class="team-heading">
+                    <span class="team-badge">A</span>
+                    <div>
+                        <p class="eyebrow">Squad</p>
+                        <h2>Team A</h2>
+                    </div>
+                </div>
+
+                <div class="team-roster">
+                    {% for player in best_a_team %}
+                        <article class="result-player-card">
+                            <h3>{{ player.name }}</h3>
+                            <div class="result-stats">
+                                <span>Athleticism <strong>{{ player.athleticism }}</strong></span>
+                                <span>Technical <strong>{{ player.technical }}</strong></span>
+                                <span>Football IQ <strong>{{ player.football_iq }}</strong></span>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <div class="versus" aria-hidden="true">VS</div>
+
+            <section class="team-panel">
+                <div class="team-heading">
+                    <span class="team-badge">B</span>
+                    <div>
+                        <p class="eyebrow">Squad</p>
+                        <h2>Team B</h2>
+                    </div>
+                </div>
+
+                <div class="team-roster">
+                    {% for player in best_b_team %}
+                        <article class="result-player-card">
+                            <h3>{{ player.name }}</h3>
+                            <div class="result-stats">
+                                <span>Athleticism <strong>{{ player.athleticism }}</strong></span>
+                                <span>Technical <strong>{{ player.technical }}</strong></span>
+                                <span>Football IQ <strong>{{ player.football_iq }}</strong></span>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </section>
+        </div>
+
+        <div class="results-actions">
+            <a class="btn btn-secondary" href="{{ url_for('home') }}">← Back to Players</a>
+        </div>
+    </main>
 </body>
 </html>

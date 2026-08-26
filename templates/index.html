@@ -2,47 +2,121 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SideSync</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>SideSync</h1>
-    <p>Create fair pickup soccer teams.</p>
-    <p>{{ player_count}} players added</p>
-    <ul>
-    <form id="team-form" method="POST" action="{{ url_for('generate_teams')}}"><button type="submit">Generate Teams</button></form>
-    {% if players%}
-        {% for player in players %}
-            <li><input type="checkbox" name="player_ids" value="{{player.id}}" form="team-form">{{ player.name }}
-                <ul>
-                    <li>Athleticism: {{ player.athleticism }}</li>
-                    <li>Technical: {{ player.technical }}</li>
-                    <li>Football IQ: {{ player.football_iq }}</li>
-                </ul>
-            </li>
-            <a href="{{url_for('edit_player',player_id=player.id)}}">Edit</a>
-            <form method="POST" action="{{ url_for('delete_player', player_id=player.id) }}">
-    <button type="submit">Delete</button>
-    
-</form>
-        {% endfor %}
-    {% else %}
-    <p>No players have been added yet.</p>
-    {% endif %}
-    </ul>
-    <h2>Add Player</h2>
-    <form method="POST">
-        <label for="player_name">Player name:</label>
-            <input type = "text" id="player_name" name="player_name" required>
-        <label for="athleticism">Athleticism: </label>
-            <input type = "number" id="athleticism" name="athleticism" min="1" max="10" step="0.5" required>
-        <label for="technical">Technical: </label>
-            <input type = "number" id="technical" name="technical" min="1" max="10" step="0.5" required>
-        <label for="football_iq">Football IQ: </label>
-            <input type = "number" id="football_iq" name="football_iq" min="1" max="10" step="0.5" required>
-        <button type="submit">Add Player</button>
-    </form>
-    <form method = "POST">
+    <main class="app-shell">
+        <header class="hero">
+            <div>
+                <p class="eyebrow">Pickup team balancer</p>
+                <h1 class="brand">SideSync</h1>
+                <p class="hero-copy">Create fair pickup soccer teams without the pre-game arguments.</p>
+            </div>
+            <div class="player-count" aria-label="Player count">
+                <span class="player-count-number">{{ player_count }}</span>
+                <span class="player-count-label">players</span>
+            </div>
+        </header>
 
-    </form>
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">Step 1</p>
+                    <h2>Select players</h2>
+                    <p class="section-copy">Choose an even number of players, then let SideSync find the most balanced split.</p>
+                </div>
+
+                <form id="team-form" method="POST" action="{{ url_for('generate_teams') }}" class="generate-form">
+                    <button class="btn btn-primary" type="submit">Generate Teams</button>
+                </form>
+            </div>
+
+            {% if players %}
+                <div class="player-grid">
+                    {% for player in players %}
+                        <article class="player-card">
+                            <div class="player-card-top">
+                                <label class="player-select">
+                                    <input
+                                        class="player-checkbox"
+                                        type="checkbox"
+                                        name="player_ids"
+                                        value="{{ player.id }}"
+                                        form="team-form"
+                                    >
+                                    <span class="player-name">{{ player.name }}</span>
+                                </label>
+                            </div>
+
+                            <div class="stats-grid">
+                                <div class="stat">
+                                    <span class="stat-label">Athleticism</span>
+                                    <strong class="stat-value">{{ player.athleticism }}</strong>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Technical</span>
+                                    <strong class="stat-value">{{ player.technical }}</strong>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Football IQ</span>
+                                    <strong class="stat-value">{{ player.football_iq }}</strong>
+                                </div>
+                            </div>
+
+                            <div class="card-actions">
+                                <a class="btn btn-secondary btn-small" href="{{ url_for('edit_player', player_id=player.id) }}">Edit</a>
+                                <form method="POST" action="{{ url_for('delete_player', player_id=player.id) }}">
+                                    <button class="btn btn-danger btn-small" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <h3>No players yet</h3>
+                    <p>Add your first player below to start building a squad.</p>
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="panel add-player-panel">
+            <div class="section-heading compact-heading">
+                <div>
+                    <p class="eyebrow">Step 2</p>
+                    <h2>Add Player</h2>
+                    <p class="section-copy">Rate each player from 1–10. Half-point ratings are allowed.</p>
+                </div>
+            </div>
+
+            <form method="POST" class="player-form">
+                <div class="form-field form-field-wide">
+                    <label for="player_name">Player name</label>
+                    <input type="text" id="player_name" name="player_name" placeholder="e.g. Joseph" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="athleticism">Athleticism</label>
+                    <input type="number" id="athleticism" name="athleticism" min="1" max="10" step="0.5" placeholder="1–10" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="technical">Technical</label>
+                    <input type="number" id="technical" name="technical" min="1" max="10" step="0.5" placeholder="1–10" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="football_iq">Football IQ</label>
+                    <input type="number" id="football_iq" name="football_iq" min="1" max="10" step="0.5" placeholder="1–10" required>
+                </div>
+
+                <div class="form-submit">
+                    <button class="btn btn-primary" type="submit">Add Player</button>
+                </div>
+            </form>
+        </section>
+    </main>
 </body>
 </html>

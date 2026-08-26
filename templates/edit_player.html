@@ -2,19 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SideSync Editing...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit {{ player.name }} | SideSync</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <form method="POST">
-        <label for="player_name">Player name:</label>
-            <input type = "text" id="player_name" name="player_name" value = "{{player.name}}" required>
-        <label for="athleticism">Athleticism: </label>
-            <input type = "number" id="athleticism" name="athleticism" min="1" max="10" step="0.5" value = "{{player.athleticism}}" required>
-        <label for="technical">Technical: </label>
-            <input type = "number" id="technical" name="technical" min="1" max="10" step="0.5" value = "{{player.technical}}" required>
-        <label for="football_iq">Football IQ: </label>
-            <input type = "number" id="football_iq" name="football_iq" min="1" max="10" step="0.5" value = "{{player.football_iq}}" required>
-        <button type="submit">Save Changes</button>
-    </form>
+    <main class="page-center">
+        <section class="panel form-card">
+            <a class="back-link" href="{{ url_for('home') }}">← Back to players</a>
+
+            <div class="section-heading compact-heading">
+                <div>
+                    <p class="eyebrow">Player settings</p>
+                    <h1>Edit {{ player.name }}</h1>
+                    <p class="section-copy">Update the ratings SideSync uses when balancing teams.</p>
+                </div>
+            </div>
+
+            <form method="POST" class="player-form edit-form">
+                <div class="form-field form-field-wide">
+                    <label for="player_name">Player name</label>
+                    <input type="text" id="player_name" name="player_name" value="{{ player.name }}" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="athleticism">Athleticism</label>
+                    <input type="number" id="athleticism" name="athleticism" min="1" max="10" step="0.5" value="{{ player.athleticism }}" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="technical">Technical</label>
+                    <input type="number" id="technical" name="technical" min="1" max="10" step="0.5" value="{{ player.technical }}" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="football_iq">Football IQ</label>
+                    <input type="number" id="football_iq" name="football_iq" min="1" max="10" step="0.5" value="{{ player.football_iq }}" required>
+                </div>
+
+                <div class="form-submit">
+                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                </div>
+            </form>
+        </section>
+    </main>
 </body>
 </html>
