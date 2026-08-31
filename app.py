@@ -94,94 +94,110 @@ def edit_player(player_id):
     )
     return redirect(url_for("home"))
 
-@app.route("/generate-teams",methods=["POST"])
-def generate_teams():
-    '''
-    Function is to generate teams. 
-    args= none
-    return: N/A For now
-    '''
-    player_ids = request.form.getlist("player_ids")
-    if len(player_ids)<=1:
-        return "Not enough players"
-    if len(player_ids)%2!=0:
-        return "Uneven players.(Perhaps play with 1 neutral?)"
-    # Form values come in as strings, so convert each player ID to an integer
-    player_ids = [int(value) for value in player_ids]
-    # Query the database for every Player whose ID was selected
-    # .where(...in_(player_ids)) filters the Player table to only those IDs
-    selected_players = db.session.execute(
-    # Generate every possible Team A containing half of the selected players
-    db.select(Player).where(Player.id.in_(player_ids))).scalars().all()
-    possible_team_as = combinations(selected_players,len(selected_players)//2)
-    # Store the fairest matchup found so far
+def balance_teams(selected_players):
+    """
+    Finds the most balanced possible split of the selected players.
+
+    Args:
+        selected_players: List of Player objects
+
+    Returns:
+        best_a_team: Best Team A
+        best_b_team: Best Team B
+        best_diff: Balance penalty for the matchup
+    """
+
+    possible_team_as = combinations(
+        selected_players,
+        len(selected_players) // 2
+    )
+
     best_diff = None
     best_a_team = None
-    best_b_team= None
-    # Check every possible Team A
-    for team_a in possible_team_as:
-        # Reset rating totals for each new matchup
-        A_iq = 0
-        A_tech = 0
-        A_athleticism = 0
-        B_iq = 0
-        B_tech = 0
-        B_athleticism = 0
-         # Every matchup appears twice with the teams flipped.
-        # Keep only combinations where the first selected player is on Team A.
+    best_b_team = None
 
+    for team_a in possible_team_as:
+
+        # Ignore duplicate matchups where Team A and Team B are just flipped
         if selected_players[0] not in team_a:
             continue
-        # Team B is every selected player who is NOT already on Team A
-        team_b = [player for player in selected_players if player not in team_a]
 
-        # Add together Team A's ratings
+        team_b = [
+            player
+            for player in selected_players
+            if player not in team_a
+        ]
+
+        team_a_iq_total = 0
+        team_a_tech_total = 0
+        team_a_athleticism_total = 0
+
+        team_b_iq_total = 0
+        team_b_tech_total = 0
+        team_b_athleticism_total = 0
+
         for player in team_a:
-            A_iq+= player.football_iq
-            A_tech+= player.technical
-            A_athleticism+= player.athleticism
-            #print("A",player.name)
-        # Calculate Team A's average ratings
-        A_iq_avg = A_iq/len(team_a)
-        A_tech_avg = A_tech/len(team_a)
-        A_athleticism_avg = (A_athleticism/len(team_a))
-        #print(A_iq_avg,A_tech_avg,A_athleticism_avg)
-        #print("-")
-        # Add together Team B's ratings
+            team_a_iq_total += player.football_iq
+            team_a_tech_total += player.technical
+            team_a_athleticism_total += player.athleticism
+
         for player in team_b:
-            B_iq+= player.football_iq
-            B_tech+= player.technical
-            B_athleticism+= player.athleticism
-            #print("B",player.name)
-        # Calculate Team B's average ratings
-        B_iq_avg = B_iq/len(team_b)
-        B_tech_avg = B_tech/len(team_b)
-        B_athleticism_avg = B_athleticism/len(team_b)
-        #print(B_iq_avg,B_tech_avg,B_athleticism_avg)
-        # Calculate the difference between the teams in each category.
-        # abs() makes the difference positive no matter which team is stronger.
-        # Apply our weights: IQ 45%, Technical 35%, Athleticism 20%.
-        
-        iq_diff = abs((A_iq_avg*0.45) - (B_iq_avg*0.45))
-        tech_diff = abs((A_tech_avg*0.35) - (B_tech_avg*0.35))
-        athleticism_diff = abs((A_athleticism_avg*0.20) - (B_athleticism_avg*0.20))
-        # One overall balance penalty.
-        # Lower total_diff means the teams are more evenly matched.
-        total_diff = iq_diff+tech_diff+athleticism_diff
+            team_b_iq_total += player.football_iq
+            team_b_tech_total += player.technical
+            team_b_athleticism_total += player.athleticism
+
+        team_a_iq_avg = team_a_iq_total / len(team_a)
+        team_a_tech_avg = team_a_tech_total / len(team_a)
+        team_a_athleticism_avg = team_a_athleticism_total / len(team_a)
+
+        team_b_iq_avg = team_b_iq_total / len(team_b)
+        team_b_tech_avg = team_b_tech_total / len(team_b)
+        team_b_athleticism_avg = team_b_athleticism_total / len(team_b)
+
+        iq_diff = abs(team_a_iq_avg - team_b_iq_avg) * 0.45
+        tech_diff = abs(team_a_tech_avg - team_b_tech_avg) * 0.35
+        athleticism_diff = (
+            abs(team_a_athleticism_avg - team_b_athleticism_avg) * 0.20
+        )
+
+        total_diff = iq_diff + tech_diff + athleticism_diff
+
         if best_diff is None or total_diff < best_diff:
             best_diff = total_diff
-            best_a_team= [player for player in team_a]
-            best_b_team = [player for player in team_b]
-            
-        #print("***\n",iq_diff,tech_diff,athleticism_diff)
-        #print("------")
-    # After checking every matchup, these are the fairest teams found    
+
+            # Keep the Player objects so the template can use player.name,
+            # player.technical, etc.
+            best_a_team = team_a
+            best_b_team = team_b
+
+    return best_a_team, best_b_team, best_diff
+
+
+
+@app.route("/generate-teams", methods=["POST"])
+def generate_teams():
+    player_ids = request.form.getlist("player_ids")
+
+    if len(player_ids) <= 1:
+        return "Not enough players"
+
+    if len(player_ids) % 2 != 0:
+        return "Uneven players. (Perhaps play with 1 neutral?)"
+
+    player_ids = [int(value) for value in player_ids]
+
+    selected_players = db.session.execute(
+        db.select(Player).where(Player.id.in_(player_ids))
+    ).scalars().all()
+
+    best_a_team, best_b_team, best_diff = balance_teams(selected_players)
+
     return render_template(
         "generate_teams.html",
         best_a_team=best_a_team,
         best_b_team=best_b_team,
         best_diff=best_diff
-        )
+    )
 with app.app_context():
     '''
     creates any missing database tables based on my models.
