@@ -1,114 +1,101 @@
 # SideSync
 
-SideSync is a pickup soccer team-balancing web app that creates fair teams based on player ratings.
+SideSync is a Flask web application I built to create fair teams for pickup soccer. Choosing teams by hand can be inconsistent, especially when every player brings different strengths, so I wanted to turn that real problem into a practical software project.
 
-## Features
+Instead of relying on a single overall rating, SideSync compares players across football IQ, technical ability, and athleticism to find the most balanced matchup available. Building it gave me the chance to work with backend development, databases, CRUD operations, and a custom scoring algorithm in one complete application.
 
-- Add, edit, and delete players
-- Store player ratings with SQLite
-- Select which players are playing
-- Generate every valid equal-team split
-- Compare teams using weighted player categories
-- Automatically choose the most balanced matchup
-- Display the generated teams in a styled results page
-
-## Tech Stack
+## Technologies
 
 - Python
 - Flask
 - SQLAlchemy
 - SQLite
-- HTML
-- CSS
+- Jinja
+- HTML and CSS
 
-## How the Balancing Algorithm Works
+## Core Features
 
-Each player is rated in three categories:
+- Add, edit, and delete players
+- Store player ratings in SQLite
+- Rate players from 1–10 in three soccer-specific categories
+- Select the players participating in a session
+- Generate and compare every unique equal-team split
+- Automatically return the matchup with the lowest balance penalty
 
-- **Football IQ** — decision-making, positioning, awareness, movement, and defensive intelligence
-- **Technical Ability** — passing, first touch, dribbling, ball control, shooting, and execution
-- **Athleticism** — pace, agility, stamina, strength, and physical ability
+## Balancing Algorithm
 
-The categories are weighted based on how much they affect pickup soccer:
-
-- Football IQ: **45%**
-- Technical Ability: **35%**
-- Athleticism: **20%**
-
-For every possible equal-team split, SideSync:
-
-1. Calculates each team’s average rating in all three categories
-2. Finds the difference between the two teams in each category
-3. Applies the category weights
-4. Adds those differences into one balance penalty
+For every valid equal-team split, SideSync calculates each team's average rating in three categories and measures the absolute difference between the teams. Those differences are combined into a weighted balance penalty:
 
 ```text
 balance penalty =
-    (IQ difference × 0.45)
-  + (Technical difference × 0.35)
+    (Football IQ difference × 0.45)
+  + (Technical Ability difference × 0.35)
   + (Athleticism difference × 0.20)
 ```
 
-The matchup with the lowest balance penalty is selected.
+The split with the lowest penalty is selected. Football IQ receives the greatest weight because awareness, positioning, and decision-making affect both attack and defense. Technical ability remains a major factor in possession and execution, while athleticism is weighted lower so pace or strength alone does not dominate the result.
 
-### Design Decisions
+The categories are compared separately instead of collapsing every player into one overall score. This preserves distinct player profiles: two players can have similar overall ability while contributing in very different ways. SideSync therefore balances the composition of each team, not just its total talent.
 
-SideSync compares categories separately instead of giving each player one overall rating.
+## Setup and Run
 
-This preserves different player profiles. A player with high Football IQ but average Technical Ability should not be treated exactly the same as a highly technical player with lower awareness, even if their overall ability seems similar.
+1. Clone the repository and enter the project directory:
 
-The algorithm also removes mirrored duplicate matchups so that each unique team split is only evaluated once.
+   ```bash
+   git clone <repository-url>
+   cd SideSync
+   ```
 
-A low balance score means the selected teams are closely matched. A high score can indicate that the player pool itself cannot be divided into truly even teams.
+2. Create and activate a virtual environment:
 
-## Why I Built It
+   ```bash
+   python -m venv .venv
+   ```
 
-My friends and I regularly play pickup soccer, and creating fair teams can be difficult when players have different strengths.
+   On Windows:
 
-I built SideSync to solve that problem while learning backend development, databases, web applications, and algorithm design.
+   ```powershell
+   .venv\Scripts\Activate.ps1
+   ```
 
-## What I Learned
+   On macOS or Linux:
 
-Through SideSync, I practiced:
+   ```bash
+   source .venv/bin/activate
+   ```
 
-- Flask routing and HTTP GET/POST requests
-- CRUD operations
-- Form handling and validation
-- SQLAlchemy and relational database concepts
-- Jinja templates
-- Python combinations and list comprehensions
-- Designing and testing a custom scoring algorithm
-- Git and GitHub workflow
-- Refactoring application logic into cleaner functions
+3. Install the project dependencies:
 
-## Running Locally
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-1. Clone the repository:
+4. Start the application:
 
-```bash
-git clone <your-repository-url>
-```
+   ```bash
+   python app.py
+   ```
 
-2. Create and activate a virtual environment.
+5. Open the local address shown in the terminal.
 
-3. Install dependencies:
+## Usage
 
-```bash
-pip install -r requirements.txt
-```
+1. Add each player and assign ratings for Football IQ, Technical Ability, and Athleticism.
+2. Select the players participating in the current game.
+3. Choose **Generate Teams**.
+4. Review the two teams and their balance score; a lower score represents a closer matchup.
 
-4. Run the app:
+SideSync requires an even number of selected players so both teams have the same size.
 
-```bash
-python app.py
-```
+## Project Status
 
-5. Open the local Flask address shown in the terminal.
+**V1 is complete.** The full player-management and team-balancing workflow is working, from saving player ratings to generating the best available team split. I am happy with the foundation and plan to use what I learned here in future projects and possible SideSync updates.
 
 ## Future Improvements
 
-- Deploy the application
-- Add a warning when the best available matchup is still noticeably uneven
-- Improve validation and error handling
-- Add automated tests
-- Explore a REST API and more interactive frontend
+- Add automated tests for the scoring and team-generation logic
+- Improve validation and user-facing error messages
+- Warn when the best available split is still significantly uneven
+- Add optional randomization between similarly balanced matchups
+- Deploy the application for public use
+- Explore an API-driven frontend and PostgreSQL for a future version
